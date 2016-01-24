@@ -1,30 +1,31 @@
-﻿using System;
-using System.IO;
+﻿/// TeamWorkbook
+/// 
+/// This class is very specific to Excel spreadsheets written for
+/// TCES 481, in-class reviews of student presentations. This class
+/// opens a particular workbook for a particular team and provides 
+/// utility methods to paste scores and paste comments from individual
+/// student assessments.
+/// 
+/// R. Gutmann
+/// 1/23/2016
+/// 
+
+
+
+using System;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClassAssessments
 {
   class TeamWorkbook
   {
-    Excel.Application excelApp;
-    //string fileName;
-    Excel.Workbook excelWorkbook = null;
-    Excel.Worksheet excelWorksheet = null;
-    int currentRow = 6;
+    Excel.Workbook    excelWorkbook = null;
+    Excel.Worksheet   excelWorksheet = null;
+    int currentRow = 6;  // which row to paste scores and comments 
 
 
-    public TeamWorkbook( Excel.Application app, string fileName )
+    public TeamWorkbook( Excel.Application excelApp, string fileName )
     {
-      excelApp = app;
-      //fileName = fn;
-
-      //DirectoryInfo topDir = new DirectoryInfo( Environment.CurrentDirectory );
-      //string dirName = topDir.FullName;
-      //Console.WriteLine( dirName );
       try
       {
         excelWorkbook = excelApp.Workbooks.Open( fileName, 0,
@@ -48,8 +49,9 @@ namespace ClassAssessments
 
     public void PasteScores( Excel.Range scores )
     {
-      scores.Copy();
-      string newCell = "A" + (++currentRow).ToString();  // increment row
+      // note: for PasteSpecial to work, both the student and team workbooks must be opend using the same Excel App
+      scores.Copy(); // copy scoares to clipboard
+      string newCell = "A" + (++currentRow).ToString();  // Note: increment row
       Excel.Range excelRange = excelWorksheet.get_Range( newCell, newCell );  // starts with A7, then moves down
 
       try {
@@ -68,8 +70,8 @@ namespace ClassAssessments
     public void PasteComments( Excel.Range comments )
     {
       comments.Copy();
-      string newCell = "J" + ( currentRow ).ToString();
-      Excel.Range excelRange = excelWorksheet.get_Range( newCell, newCell );  // starts with A7, then moves down
+      string newCell = "J" + ( currentRow ).ToString();   // very specific
+      Excel.Range excelRange = excelWorksheet.get_Range( newCell, newCell );  
 
       try
       {

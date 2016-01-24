@@ -21,8 +21,7 @@ namespace ClassAssessments
 {
   class ParseWorkbooks
   {
-    //string topDirName;  // name of the start-up directory
-
+  
     static void Main( string[] args )
     {
       if ( args.Length < 1 || args.Length > 1 )
@@ -40,40 +39,43 @@ namespace ClassAssessments
     }  // end of Main()
 
 
+    /// <summary>
+    /// ParseWrokbooks constructor does all the work.
+    /// </summary>
+    /// <param name="teamNumberString"></param>
+    /// 
     ParseWorkbooks( string teamNumberString )
     {
       int teamNumber = TeamWorkbook.GetTeamNumber( teamNumberString );
 
-      DirectoryInfo topDir = new DirectoryInfo( Environment.CurrentDirectory );
-      string topDirName = topDir.FullName;
-      string teamWorkbookPath = TeamWorkbook.GetTeamPath( topDirName, teamNumberString );
+      DirectoryInfo topDir = new DirectoryInfo( Environment.CurrentDirectory );  // directory we are in
+      string topDirName = topDir.FullName;                                       // full path 
+      string teamWorkbookPath = TeamWorkbook.GetTeamPath( topDirName, teamNumberString );  // make the path to our team workbook
 
       Excel.Application excelApp = new Excel.Application();  // Creates a new Excel Application
-      excelApp.Visible = false;  // Makes Excel invisible to the user.
+      excelApp.Visible = false;                              // Makes Excel invisible to the user.
 
-      //TeamWorkbook twb = new TeamWorkbook( excelApp, "e:\\projects\\cs490\\excel\\classassessments\\bin\\debug\\Team01\\Team01P1.xlsx" );
-      TeamWorkbook twb = new TeamWorkbook( excelApp, teamWorkbookPath );
+      TeamWorkbook twb = new TeamWorkbook( excelApp, teamWorkbookPath ); // open our team workbook (must use full path)
 
-      FileInfo[] studentFiles = topDir.GetFiles( "*.xlsx" );
+      FileInfo[] studentFiles = topDir.GetFiles( "*.xlsx" );   // find all the student assessments
       if ( studentFiles.Length != 0 )
       {
-        foreach ( FileInfo fileinf in topDir.GetFiles( "*.xlsx" ) )
-        //FileInfo fileinf = new FileInfo( "graydaniel_3484091_34593574_assessment1.xlsx" );
+        foreach ( FileInfo fileinf in studentFiles )  // for each student assessment
         {
-          StudentWorkbook swb = new StudentWorkbook( excelApp, fileinf.FullName );
-          if ( swb.TeamNumber == teamNumber )
+          StudentWorkbook swb = new StudentWorkbook( excelApp, fileinf.FullName );  // parse the Excel file
+          if ( swb.TeamNumber == teamNumber )   // if it's the correct team number
           {
-            Console.WriteLine( fileinf.Name );
-            twb.PasteScores( swb.Scores );
-            twb.PasteComments( swb.Comments );
+            Console.WriteLine( fileinf.Name );  
+            twb.PasteScores( swb.Scores );      // paste scores in the team workbook
+            twb.PasteComments( swb.Comments );  // paste comments in teh team workbook
           }
-          swb.Close();
+          swb.Close();  // close the student assessment
         }
       }
 
-      twb.Close();
-      excelApp.Application.DisplayAlerts = false;
-      excelApp.Quit();
+      twb.Close();                                 // close the team workbook
+      excelApp.Application.DisplayAlerts = false;  // no nanny
+      excelApp.Quit();                             // close the Excel app
 
     }  // end of ParseWorkbooks
   }  // end of class ParseWorkbooks
